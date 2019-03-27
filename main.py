@@ -11,14 +11,27 @@ bq_assistant = BigQueryHelper("patents-public-data", "patents")
 table_names = bq_assistant.list_tables()
 print(table_names)
 rows = bq_assistant.head("publications_201809", num_rows=500)
-
+print(list(rows))
 assignees = rows["assignee"].value_counts()
+inventors = rows["inventor"].value_counts()
+
+# ToDo:Delete rows with empty inventors or assignees.
 
 
 def top_n_assignees(n):
     return assignees.nlargest(n)
 
 
-print(top_n_assignees(5))
-top_n_assignees(5).hist()
+def top_n_inventors(n):
+    return inventors.nlargest(n)
+
+
+top_assignees = top_n_assignees(5)
+top_inventors = top_n_inventors(5)
+top_assignees.plot()
 plt.show()
+top_inventors.plot()
+plt.show()
+
+
+
