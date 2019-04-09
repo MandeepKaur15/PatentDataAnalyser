@@ -4,7 +4,7 @@ from bq_helper import BigQueryHelper
 from pyspark_dist_explore import hist
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
-
+import nltk
 import sys
 import copy
 import time
