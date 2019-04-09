@@ -11,11 +11,14 @@ import time
 import random
 import pyspark
 from statistics import mean
+from pyspark.sql import Row
+from collections import OrderedDict
 from pyspark.rdd import RDD
 import numpy as np
 from pyspark.sql import Row
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
+from pyspark.sql import SQLContext
 from nlp_functions import get_important_nouns_from_a_string, list_dict_representation_to_actual_list_dict
 from nlp_functions import get_data_tfidf_weights_and_vectorizer_from_corpus
 from pandas.plotting import scatter_matrix
@@ -25,6 +28,15 @@ from pyspark.sql.types import StructType, StructField, StringType
 from scipy import ndimage
 # https://www.kaggle.com/sohier/introduction-to-the-bq-helper-package
 
+
+def frequency(l):
+    input = spark.sparkContext.parallelize(l)
+    input = input.map(lambda x: (x, 1)).reduceByKey(lambda x, y: x+y).sortBy(lambda x: x[1], ascending='false')
+    return input.collect()
+
+
+def convert_to_row(d: dict) -> Row:
+    return Row(**OrderedDict(sorted(d.items())))
 
 '''
 HELPER FUNCTIONS
@@ -89,16 +101,37 @@ filtered_data = data_from_csv.filter(lambda x: len(x.assignee) > 2 and len(x.abs
 
 abstract_rdd = filtered_data.map(lambda x: (x.publication_number, list_dict_representation_to_actual_list_dict(x.abstract_localized, "text")))
 full_list = abstract_rdd.collect()
-full_list = list(map(lambda x: x[1], full_list))
-# print(full_list)
-result = get_data_tfidf_weights_and_vectorizer_from_corpus(full_list)
+list_of_abstract = list(map(lambda x: x[1], full_list))
+
+result = get_data_tfidf_weights_and_vectorizer_from_corpus(list_of_abstract)
 arr = result[0].toarray()
-v = result[1]
+Total_word_list = result[1]
+print(frequency(Total_word_list))
+exit(3)
+counter = 0
+important_word_dictionary = {}
+important_word_list = []
 for inside_arr in arr:
-    result = np.where(inside_arr > 0.2)
+    result = np.where(inside_arr > 0.25)
+    counter = counter + 1
     for r in result:
-        for c in r:
-            print(v[c])
+        words = []
+        for index_of_word_in_word_list in r:
+            words.append(Total_word_list[index_of_word_in_word_list])
+        important_word_dictionary.update({counter: words})
+        important_word_list.append((counter, words))
+
+tf_idf_pd_df = pd.DataFrame(important_word_list, columns=["patent num", "words"])
+tf_idf_pd_pyspark_df = SQLContext(spark.sparkContext)
+tf_idf_pd_pyspark_df = tf_idf_pd_pyspark_df.createDataFrame(tf_idf_pd_df)
+tf_idf_pd_pyspark_df.show()
+fpgrowth = FPGrowth(itemsCol="words", minSupport=min_support, minConfidence=confidence)
+model = fpgrowth.fit(tf_idf_pd_pyspark_df)
+my_dataframe = model.freqItemsets.orderBy("freq", ascending=False)
+my_dataframe.show()
+
+
+# print(counter)
 # print(v)
 # print(arr.toarray().shape)
 # for i in arr.toarray():
