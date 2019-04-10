@@ -79,9 +79,9 @@ spark = init_spark()
 data_from_csv = spark.read.csv("publications_201809.csv", header=True).rdd
 data_from_csv = spark.sparkContext.parallelize(data_from_csv.collect())
 
-filtered_data = data_from_csv.filter(lambda x: len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor) > 2)
+filtered_data = data_from_csv.filter(lambda x: len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor)>2)
 filtered_data_dataframe = filtered_data.toDF()
-inventors = filtered_data_dataframe.groupBy('assignee').count().sort(col("count").desc()).show()
+
 
 # hist(ax, inventors, bins=20, color=['red'])
 # data_dataframe = filtered_data.toDF()

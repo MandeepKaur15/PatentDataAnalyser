@@ -1,11 +1,14 @@
 import nltk
 from nltk.corpus import stopwords
 import re
+from inspect import currentframe, getframeinfo
+
+
 
 # http://theforgetfulcoder.blogspot.com/2012/06/stemming-or-lemmatization-words.html
 # map POS labels to labels that can be read by the lemmatizer
 
-wordnet_tag = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r', 'VBN': 'v', 'VBD': 'v',
+wordnet_tag = {'NNP': 'n', 'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r', 'VBN': 'v', 'VBD': 'v',
                'VBG': 'v', 'VBZ': 'v', 'NNS': 'n', 'VBP': 'v', 'CD': 'n', 'IN': 'n', 'MD': 'n',
                'JJR': 'a', 'JJS': 'a', 'DT': 'n', 'RBR': 'r', 'PRP': 'n', 'CC': 'n', 'WRB': 'n',
                'PRP$': 'n', 'RP': 'r', 'WP$': 'n', 'PDT': 'n', 'WDT': 'n', 'WP': 'n', 'LS': 'n'
@@ -15,12 +18,14 @@ wordnet_tag = {'NN': 'n', 'JJ': 'a', 'VB': 'v', 'RB': 'r', 'VBN': 'v', 'VBD': 'v
 # Lemmatizer and POS tagger to fit each word based on its POS
 # require wordnet_tag
 def lemmatize_words_array(words_array):
+
     lemmatizer = nltk.stem.WordNetLemmatizer()
     tagged = nltk.pos_tag(words_array)
-    lemmatized_words_array = [];
+    lemmatized_words_array = []
     for word in tagged:
         lemma = lemmatizer.lemmatize(word[0], wordnet_tag[word[1]])
         lemmatized_words_array.append(lemma)
+
     return lemmatized_words_array
 
 # Not using Stemmer
@@ -43,7 +48,6 @@ def patent_to_words(raw_review):
     #
 
 
-
     # 2. Remove non-letters
     letters_only = re.sub("[^a-zA-Z]", " ", raw_review)
     #
@@ -62,6 +66,7 @@ def patent_to_words(raw_review):
                "containing", "contain", "contains", "contained", "make", "made", "makes", "end", "couple", "relates"
                                                                                                            "b", "c",
                "d"])
+
     stops = set(xx)
     #
     # 5. Remove stop words
@@ -73,7 +78,9 @@ def patent_to_words(raw_review):
     #
     # added in
     # 7. Lemmatization
+
     lemmatization = lemmatize_words_array(meaningful_words)
+
     # 6. Join the words back into one string separated by space,
     # and return the result.
     return (" ".join(lemmatization))
