@@ -97,22 +97,24 @@ spark = init_spark()
 data_from_csv = spark.read.csv("publications_201809.csv", header=True).rdd
 data_from_csv = spark.sparkContext.parallelize(data_from_csv.collect())
 
-filtered_data = data_from_csv.filter(lambda x: len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor) > 2)
+filtered_data = data_from_csv.filter(lambda x: len(x.title_localized) > 2 and len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor) > 2)
 
-abstract_rdd = filtered_data.map(lambda x: (x.publication_number, list_dict_representation_to_actual_list_dict(x.abstract_localized, "text")))
+abstract_rdd = filtered_data.map(lambda x: (x.publication_number,
+                                            list_dict_representation_to_actual_list_dict(x.description_localized, "text") +
+                                            list_dict_representation_to_actual_list_dict(x.title_localized, "text") +
+                                            list_dict_representation_to_actual_list_dict(x.abstract_localized, "text")))
 full_list = abstract_rdd.collect()
 list_of_abstract = list(map(lambda x: x[1], full_list))
 
 result = get_data_tfidf_weights_and_vectorizer_from_corpus(list_of_abstract)
 arr = result[0].toarray()
 Total_word_list = result[1]
-print(frequency(Total_word_list))
-exit(3)
+
 counter = 0
 important_word_dictionary = {}
 important_word_list = []
 for inside_arr in arr:
-    result = np.where(inside_arr > 0.25)
+    result = np.where(inside_arr > 0.1)
     counter = counter + 1
     for r in result:
         words = []

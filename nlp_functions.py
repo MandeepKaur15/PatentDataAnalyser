@@ -15,7 +15,6 @@ def get_important_nouns_from_a_string(string):
 def list_dict_representation_to_actual_list_dict(string, dict_key):
     ans = ast.literal_eval(string)
     return ans[0][dict_key]
- 
 
 def get_data_tfidf_weights_and_vectorizer_from_corpus(corpus):
     v = TfidfVectorizer(lowercase=True, analyzer='word', use_idf=True)
