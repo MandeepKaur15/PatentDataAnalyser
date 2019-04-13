@@ -2,7 +2,8 @@ from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from nlp_functions import get_important_nouns_from_a_string, list_dict_representation_to_actual_list_dict
 from nlp_functions import get_data_tfidf_weights_and_vectorizer_from_corpus
-
+from nlp_functions import list_representation_to_actual_list
+from pyspark.sql.functions import col
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import PCA as PCAml
 from pyspark.ml.linalg import Vectors
@@ -14,8 +15,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def is_ascii(s):
     return all(ord(c) < 128 for c in s)
+
 
 def init_spark():
     spark = SparkSession \
@@ -25,16 +28,23 @@ def init_spark():
         .getOrCreate()
     return spark
 
+
 spark = init_spark()
 spark.conf.set("spark.sql.crossJoin.enabled", "true")
 
+# number of clusters for the kmeans algorithm.
+NUM_OF_CLUSTERS = 50
 
 data_from_csv = spark.read.csv("publications_201809.csv", header=True).rdd
-data_from_csv = spark.sparkContext.parallelize(data_from_csv.collect())
+data_from_csv_list = spark.sparkContext.parallelize(data_from_csv.collect())
+
 # Filtering the columns where there are empty assignees , inventors or abstracts.
-filtered_data = data_from_csv.filter(lambda x: len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor) > 2)
+filtered_data = data_from_csv_list.filter(
+    lambda x: len(x.assignee) > 2 and len(x.abstract_localized) > 2 and len(x.inventor) > 2)
+
 publication_num = filtered_data.map(lambda x: x.publication_number).collect()
-abstract_rdd = filtered_data.map(lambda x: (x.publication_number, list_dict_representation_to_actual_list_dict(x.description_localized, "text")))
+abstract_rdd = filtered_data.map(
+    lambda x: (x.publication_number, list_dict_representation_to_actual_list_dict(x.description_localized, "text")))
 full_list = abstract_rdd.collect()
 full_list = list(map(lambda x: x[1], full_list))
 result = get_data_tfidf_weights_and_vectorizer_from_corpus(full_list)
@@ -55,8 +65,7 @@ column_heading_zero = ["patent"]
 pandas_df = pd.DataFrame(reference_list)
 mySchema = StructType([StructField("labels", IntegerType(), True), StructField("features", ArrayType(FloatType()), True)])
 
-df = spark.createDataFrame(reference_list,
-                              column_heading_zero+columns_headings)
+df = spark.createDataFrame(reference_list, column_heading_zero+columns_headings)
 
 vecAssembler = VectorAssembler(inputCols=columns_headings, outputCol="features")
 new_df = vecAssembler.transform(df)
@@ -73,18 +82,8 @@ transformed = model.transform(new_df.select('features'))
 transformed.show()
 ns = transformed.selectExpr("pca as features")
 
-
-
-# ns.show()
-# exit(4)
-
-# new_df = transformed.select("pca")
-# new_df = new_df.withColumn("index", lit("7"))
-# ns = publication_num_df.join(new_df, new_df.index == publication_num_df.index).select(publication_num_df.patent, new_df.pca)
-# ns = ns.selectExpr("patent as patent", "pca as features")
-
 # # Trains a k-means model.
-kmeans = KMeans().setK(10).setSeed(1)
+kmeans = KMeans().setK(NUM_OF_CLUSTERS).setSeed(1)
 model = kmeans.fit(ns.select('features'))
 
 # # Make predictions
@@ -92,8 +91,26 @@ predictions = model.transform(ns)
 predictions = predictions.withColumn("index", monotonically_increasing_id())
 predictions.show()
 publication_num_df.show()
-l = publication_num_df.join(predictions, predictions.index == publication_num_df.index)
-l.show()
+pat_prediction = publication_num_df.join(predictions, predictions.index == publication_num_df.index).select(
+    predictions.prediction, publication_num_df.patent)
+
+# Analysing  a cluster
+pat_in_cluster_0 = pat_prediction.select("patent").where("prediction = 0")
+pat_in_cluster_0_list = [p.patent for p in pat_in_cluster_0.collect()]
+
+data_from_csv_df = data_from_csv.toDF()
+assignees_in_cluser_0 = data_from_csv_df.select("assignee").where(col("publication_number").isin(pat_in_cluster_0_list))
+assignees_similar_in_cluster_0 = assignees_in_cluser_0.collect()
+assignees_similar_in_cluster_0_list = [list_representation_to_actual_list(a.assignee)
+                                       for a in assignees_similar_in_cluster_0]
+assignees_similar_in_cluster_0_list_flattened = [item for sublist in assignees_similar_in_cluster_0_list
+                                                 for item in sublist]
+
+print(len(assignees_similar_in_cluster_0_list_flattened))
+print(len(set(assignees_similar_in_cluster_0_list_flattened)))
+
+
+
 
 # # Evaluate clustering by computing Silhouette score
 evaluator = ClusteringEvaluator()
@@ -101,11 +118,6 @@ evaluator = ClusteringEvaluator()
 silhouette = evaluator.evaluate(predictions)
 print("Silhouette with squared euclidean distance = " + str(silhouette))
 
-# # Shows the result.
-# centers = model.clusterCenters()
-# print("Cluster Centers: ")
-# for center in centers:
-#     print(center)
 
 predictions_pandas = predictions.toPandas()
 
@@ -116,6 +128,6 @@ colors = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46
           '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000',
           '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000']
 for i in range(x.shape[0]):
-   plt.scatter(x[i][0], x[i][1], c=colors[y[i]], s=10)
+   plt.scatter(x[i][0], x[i][1], c=colors[y[i] % len(colors)], s=10)
 plt.show()
 

@@ -17,8 +17,13 @@ def list_dict_representation_to_actual_list_dict(string, dict_key):
     return ans[0][dict_key]
 
 
+def list_representation_to_actual_list(string):
+    ans = ast.literal_eval(string)
+    return ans
+
+
 def get_data_tfidf_weights_and_vectorizer_from_corpus(corpus):
-    v = TfidfVectorizer(min_df=0.25, smooth_idf=True, lowercase=True, analyzer='word', use_idf=True)
+    v = TfidfVectorizer(min_df=0.4, smooth_idf=True, lowercase=True, analyzer='word', use_idf=True)
     response = v.fit_transform(corpus)
     return response, v.get_feature_names()
 
