@@ -12,15 +12,19 @@ import gensim
 from gensim import corpora, models, similarities
 
 # Load dataset
-rawData = pd.read_csv("C:\\Users\\dell pc\\PycharmProjects\\TestProject\\publications_201809.csv", header=None)
+rawData = pd.read_csv("publications_201809.csv")
+rawData = rawData[rawData.astype(str)["abstract_localized"] != "[]"]
 
-# Rename the columns as CSV does not contain headers
+rawData = rawData.reset_index(drop=True)
+
 rawData.columns = ["publication_number", "country_code", "title_localized", "abstract_localized",
                    "description_localized", "publication_date", "inventor", "assignee", "abc"]
 exampleData = rawData
+#print(patent_to_words(exampleData["abstract_localized"][129]))
 # Check Shape
 exampleData.shape
 exampleData.columns.values
+
 
 ##########################################################
 # Run StemLemma to execute Lemmatization and patent_to_words functions
@@ -32,9 +36,11 @@ exec(open("StemLemma.py").read())
 # Exploratory Choose Sample
 ####################################################
 num = 100
-print("Abstract Bag of Words: " + patent_to_words(exampleData["abstract_localized"][num]))
 
-num_patents = exampleData["abstract_localized"].size
+# print("Abstract Bag of Words: " + patent_to_words(exampleData["abstract_localized"][num]))
+
+# num_patents = exampleData["abstract_localized"].size
+num_patents = 700
 
 # Initialize an empty list to hold the clean reviews
 clean_abstracts = []
@@ -47,11 +53,12 @@ def list_dict_representation_to_actual_list_dict(string, dict_key):
 
 # Loop over each review; create an index i that goes from 0 to the length
 # of the patent list
-for i in range(60):
+for i in range(num_patents):
     # Call our function for each one, and add the result to the list of
     if len(exampleData["abstract_localized"][i]) < 3:
         print("inside")
         continue
+    print(exampleData["abstract_localized"][i])
     patent = patent_to_words(exampleData["abstract_localized"][i])
     array = patent.split()
     clean_abstracts.append(array)
@@ -65,12 +72,14 @@ for arr in clean_abstracts:
     if "language" in arr:
         arr.remove("language")
 
-print("asfdsdf", clean_abstracts)
+
+
+
 bigram = models.Phrases(clean_abstracts)
 
 final_abstracts = []
 
-for j in range(60):
+for j in range(num_patents):
     sent = clean_abstracts[j]
     temp_bigram = bigram[sent]
     final_abstracts.append(temp_bigram)
@@ -110,7 +119,7 @@ fcoords.close()
 # see http://www.analyticbridge.com/profiles/blogs/identifying-the-number-of-clusters-finally-a-solution
 # Source: num_topics.py
 
-MAX_K = 5
+MAX_K = 10
 X = np.loadtxt(os.path.join("coords.csv"), delimiter="\t")
 ks = range(1, MAX_K + 1)
 
@@ -141,7 +150,7 @@ plt.xlabel("K")
 plt.show()
 
 # Find k = 5
-NUM_TOPICS = 2
+NUM_TOPICS = 5
 
 X = np.loadtxt(os.path.join("coords.csv"), delimiter="\t")
 kmeans = KMeans(NUM_TOPICS).fit(X)
@@ -154,7 +163,7 @@ plt.show()
 
 ########################----------------------------------------
 # generate LDA model
-NUM_TOPICS = 2
+NUM_TOPICS = 5
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO)

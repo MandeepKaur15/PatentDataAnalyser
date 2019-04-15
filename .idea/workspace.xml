@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e524c64-6b81-449a-8aa4-0c2699497b2d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/KMeans_topicModelling.py" beforeDir="false" afterPath="$PROJECT_DIR$/KMeans_topicModelling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StemLemma.py" beforeDir="false" afterPath="$PROJECT_DIR$/StemLemma.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -40,27 +40,27 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3337" />
+          <entry key="py" value="3352" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3337" />
+          <entry key="Python" value="3352" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="151" column="10" selection-start-line="151" selection-end-line="152" />
+            <state relative-caret-position="89">
+              <caret line="19" column="1" selection-start-line="19" selection-start-column="1" selection-end-line="19" selection-end-column="1" />
               <folding>
                 <element signature="e#19#28#0" expanded="true" />
-                <marker date="1555101726035" expanded="true" signature="5459:5536" ph="..." />
-                <marker date="1555101726035" expanded="true" signature="5647:5897" ph="..." />
+                <marker date="1555293840633" expanded="true" signature="11355:11432" ph="..." />
+                <marker date="1555293840633" expanded="true" signature="11543:11793" ph="..." />
               </folding>
             </state>
           </provider>
@@ -78,11 +78,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/KMeans_topicModelling.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="362">
-              <caret line="200" column="75" selection-start-line="200" selection-start-column="70" selection-end-line="200" selection-end-column="75" />
+              <caret line="209" column="75" selection-start-line="209" selection-start-column="70" selection-end-line="209" selection-end-column="75" />
               <folding>
                 <element signature="e#1#38#0" expanded="true" />
               </folding>
@@ -103,6 +103,7 @@
     <findStrings>
       <find>US-7534502-B2</find>
       <find>US-7932470-B2</find>
+      <find>BigQueryHelper</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -111,16 +112,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/bq_test.py" />
         <option value="$PROJECT_DIR$/KMeans_topicModelling.py" />
         <option value="$PROJECT_DIR$/shared_cpc_assignee.csv" />
         <option value="$PROJECT_DIR$/sample.py" />
         <option value="$PROJECT_DIR$/../TestProject/KMeans_wc.py" />
+        <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="10" />
     <option name="y" value="111" />
     <option name="width" value="1346" />
@@ -355,18 +356,6 @@
       </provider>
       <provider selected="true" editor-type-id="csv-text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="151" column="10" selection-start-line="151" selection-end-line="152" />
-          <folding>
-            <element signature="e#19#28#0" expanded="true" />
-            <marker date="1555101726035" expanded="true" signature="5459:5536" ph="..." />
-            <marker date="1555101726035" expanded="true" signature="5647:5897" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../TestProject/dataPrep.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -465,9 +454,21 @@
     <entry file="file://$PROJECT_DIR$/KMeans_topicModelling.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="362">
-          <caret line="200" column="75" selection-start-line="200" selection-start-column="70" selection-end-line="200" selection-end-column="75" />
+          <caret line="209" column="75" selection-start-line="209" selection-start-column="70" selection-end-line="209" selection-end-column="75" />
           <folding>
             <element signature="e#1#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="89">
+          <caret line="19" column="1" selection-start-line="19" selection-start-column="1" selection-end-line="19" selection-end-column="1" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+            <marker date="1555293840633" expanded="true" signature="11355:11432" ph="..." />
+            <marker date="1555293840633" expanded="true" signature="11543:11793" ph="..." />
           </folding>
         </state>
       </provider>
