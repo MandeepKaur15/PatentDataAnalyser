@@ -149,7 +149,7 @@ y = kmeans.labels_
 
 colors = ["b", "g", "r", "m", "c"]
 for i in range(X.shape[0]):
-    plt.scatter(X[i][0], X[i][1], c=colors[y[i]], s=10)
+    plt.scatter(X[i][0], X[i][1], c=colors[y[i]],s=10)
 plt.show()
 
 ########################----------------------------------------
